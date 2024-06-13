@@ -1,3 +1,5 @@
+from utils import *
+
 class UDPClient:
     def _init_(self, server_ip, server_port, file_path):
         self.server_ip = server_ip
@@ -53,7 +55,6 @@ class UDPClient:
         log("File transmission completed")
         self.sock.sendto(b'END', (self.server_ip, self.server_port))
 
-
 # Usage
-client = UDPClient('127.0.0.1', 12345, 'path_to_file')
+client = UDPClient('127.0.0.1', 12345, 'test_file.txt')
 client.send_file()

@@ -1,3 +1,5 @@
+from utils import *
+
 class UDPServer:
     def _init_(self, host, port):
         self.host = host
@@ -39,7 +41,6 @@ class UDPServer:
         with open('received_file', 'wb') as f:
             f.write(file_data)
         log("File saved as 'received_file'")
-
 
 # Usage
 server = UDPServer('0.0.0.0', 12345)
