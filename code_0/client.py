@@ -53,6 +53,18 @@ class UDPClient:
         log("File transmission completed")
         self.sock.sendto(b'END', (self.server_ip, self.server_port))
 
+    def receive_ack(self, ack_number):
+        if ack_number == self.expected_ack:
+            self.expected_ack += 1
+            if self.congestion_window < self.ssthresh:
+                self.congestion_window += 1
+            else:
+                self.congestion_window += 1 / self.rtt
+
+    def handle_timeout(self):
+        self.ssthresh = max(self.congestion_window // 2, 2)
+        self.congestion_window = 1
+        self.send_segment(self.next_seq_num)
 
 # Usage
 client = UDPClient('127.0.0.1', 12345, 'path_to_file')
