@@ -1,5 +1,4 @@
 import socket
-import sys
 
 def start(UDP_IP, UDP_PORT):
 	# Create a UDP socket
@@ -15,4 +14,4 @@ def start(UDP_IP, UDP_PORT):
 
 if __name__ == "__main__":
 	# Define the UDP IP address and port to listen on
-	start("127.0.0.1", 5005, )
+	start("0.0.0.0", 5005)
