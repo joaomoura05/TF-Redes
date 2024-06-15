@@ -1,33 +1,26 @@
 from utils import *
 
-def start(UDP_IP, UDP_PORT):
-    # Create a UDP socket
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind((UDP_IP, UDP_PORT))
-    print(f"Listening for UDP packets on {UDP_IP}:{UDP_PORT}")
+
+def start(IP, PORT):
+    # Cria um socket UDP
+    server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_sock.bind((IP, PORT))
+    print(f"Listening for UDP packets on {IP}:{PORT}")
 
     while True:
-        # Receive data from the socket
-        data, addr = sock.recvfrom(1024)
-        print(f"Received packet from client {addr}: {data.decode('utf-8')}")
+        # Recebe o dado do socket
+        data, addr = server_sock.recvfrom(1024)
 
-        # Check if the received data contains "END"
-        if "END" in data.decode('utf-8'):
-            print("Closing connection as requested by the client.")
-            break  # Exit the loop and close the connection
-
-
-def receive_data(sock):
-    while True:
-        # Receive data from the socket
-        data, addr = sock.recvfrom(1024)
-        print(f"Received packet from client {addr}: {data.decode('utf-8')}")
-
-        # END CONNECTION
-        # Check if the received data contains "END"
+        # Aqui caso o dado = END termina a conexão
         if "END" in data.decode('utf-8'):
             print("Closing connection as requested by the client.")
             break
+        else:
+            process_packet(data, addr)
+
+
+def process_packet(data, addr):
+    print(f"Received packet from client {addr}: {data.decode('utf-8')}")
 
 
 if __name__ == "__main__":

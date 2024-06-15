@@ -1,19 +1,48 @@
 from utils import *
 
-def send_file(UDP_IP, UDP_PORT, data):
-	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	try:
-		sock.sendto(data.encode(), (UDP_IP, UDP_PORT))
-		print(f"Sent UDP packet to {UDP_IP}:{UDP_PORT}: {data}")
-	finally:
-		sock.close()
+
+def send_file(IP, PORT, data):
+    client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sequence_number = 0
+
+    try:
+        # Aqui divide os dados em chunks e envia cada um com um número de sequência
+        for i in range(0, len(data), packet_size):
+            chunk = data[i:i + packet_size]
+            send_chunk(client_sock, IP, PORT, chunk, sequence_number)
+            # Incremente o número de sequência após cada envio
+            sequence_number += 1
+
+        # Termina a transmissão de dados
+        print("File transmission completed")
+        client_sock.sendto(b'END', (IP, PORT))
+
+    finally:
+        client_sock.close()
+
+
+def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
+    # O código que você forneceu para enviar um chunk e esperar por um ACK
+    # Simplesmente envia o chunk com o número de sequência (não implementado neste exemplo)
+    chunk = chunk.encode('utf-8')
+    chunk = chunk.ljust(packet_size, b'\0')  # Padding
+    crc = calculate_crc(chunk)
+
+    packet = f"PACKET-{sequence_number}: CRC-{crc} :".encode('utf-8') + chunk
+
+    # packet = introduce_error(packet)
+
+    client_sock.sendto(packet, (server_ip, server_port))
+    print(f"Sent packet {sequence_number} to {server_ip}:{server_port}")
+
 
 if __name__ == "__main__":
-
-	path = sys.argv[1]
-
-	if path == 'END':
-		send_file("127.0.0.1", 5005, 'END')
-	else:
-		data = read_file(path)
-		send_file("127.0.0.1", 5005, data)
+    path = sys.argv[1]
+    if path == 'END':
+        # Termina a transmissão de dados
+        print("File transmission completed")
+        client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        client_sock.sendto(b'END', ("127.0.0.1", 5005))
+    else:
+        data = read_file(path)
+        send_file("127.0.0.1", 5005, data)
