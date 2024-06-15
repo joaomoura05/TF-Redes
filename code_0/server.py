@@ -1,5 +1,15 @@
+import socket
+
+def log(message):
+    # Placeholder for the logging function
+    print(message)
+
+def calculate_crc(data):
+    # Placeholder for the CRC calculation function
+    return sum(data) % 256  # Example CRC calculation
+
 class UDPServer:
-    def _init_(self, host, port):
+    def __init__(self, host, port):
         self.host = host
         self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -40,7 +50,5 @@ class UDPServer:
             f.write(file_data)
         log("File saved as 'received_file'")
 
-
-# Usage
 server = UDPServer('0.0.0.0', 12345)
 server.start()

@@ -1,5 +1,34 @@
+import socket
+
+# Placeholder constants
+TIMEOUT = 1
+CONGESTION_WINDOW_INITIAL = 1
+CONGESTION_WINDOW_MAX = 1000
+PACKET_SIZE = 1024
+
+def log(message):
+    # Placeholder for the logging function
+    print(message)
+
+def split_file(file_path):
+    # Placeholder for the file splitting function
+    with open(file_path, 'rb') as f:
+        while True:
+            chunk = f.read(PACKET_SIZE - 8)  # Adjust size for headers
+            if not chunk:
+                break
+            yield chunk
+
+def calculate_crc(data):
+    # Placeholder for the CRC calculation function
+    return sum(data) % 256  # Example CRC calculation
+
+def introduce_error(packet):
+    # Placeholder for the function to introduce error
+    return packet
+
 class UDPClient:
-    def _init_(self, server_ip, server_port, file_path):
+    def __init__(self, server_ip, server_port, file_path):
         self.server_ip = server_ip
         self.server_port = server_port
         self.file_path = file_path
@@ -16,7 +45,7 @@ class UDPClient:
         self.end_transmission()
 
     def send_chunk(self, chunk):
-        chunk = chunk.ljust(PACKET_SIZE, b'\0')  # Padding
+        chunk = chunk.ljust(PACKET_SIZE - 8, b'\0')  # Padding
         crc = calculate_crc(chunk)
         packet = self.sequence_number.to_bytes(4, 'big') + crc.to_bytes(4, 'big') + chunk
         packet = introduce_error(packet)
@@ -53,19 +82,6 @@ class UDPClient:
         log("File transmission completed")
         self.sock.sendto(b'END', (self.server_ip, self.server_port))
 
-    def receive_ack(self, ack_number):
-        if ack_number == self.expected_ack:
-            self.expected_ack += 1
-            if self.congestion_window < self.ssthresh:
-                self.congestion_window += 1
-            else:
-                self.congestion_window += 1 / self.rtt
-
-    def handle_timeout(self):
-        self.ssthresh = max(self.congestion_window // 2, 2)
-        self.congestion_window = 1
-        self.send_segment(self.next_seq_num)
-
 # Usage
-client = UDPClient('127.0.0.1', 12345, 'path_to_file')
+client = UDPClient('127.0.0.1', 12345, 'C:/Users/user/Documents/GitHub/TF-Redes/code_0/teste.txt')
 client.send_file()
