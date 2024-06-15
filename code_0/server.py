@@ -1,12 +1,11 @@
 import socket
 
 def log(message):
-    # Placeholder for the logging function
     print(message)
 
 def calculate_crc(data):
-    # Placeholder for the CRC calculation function
-    return sum(data) % 256  # Example CRC calculation
+    
+    return sum(data) % 256 
 
 class UDPServer:
     def __init__(self, host, port):

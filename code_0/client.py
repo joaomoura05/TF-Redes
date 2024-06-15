@@ -1,17 +1,19 @@
 import socket
+import time
 
-# Placeholder constants
+SERVER_IP = '127.0.0.1'
+SERVER_PORT = 12345
+FILE_PATH = 'C:/Users/user/Documents/GitHub/TF-Redes/code_0/teste.txt' 
+
 TIMEOUT = 1
 CONGESTION_WINDOW_INITIAL = 1
 CONGESTION_WINDOW_MAX = 1000
 PACKET_SIZE = 1024
 
 def log(message):
-    # Placeholder for the logging function
     print(message)
 
 def split_file(file_path):
-    # Placeholder for the file splitting function
     with open(file_path, 'rb') as f:
         while True:
             chunk = f.read(PACKET_SIZE - 8)  # Adjust size for headers
@@ -20,12 +22,10 @@ def split_file(file_path):
             yield chunk
 
 def calculate_crc(data):
-    # Placeholder for the CRC calculation function
-    return sum(data) % 256  # Example CRC calculation
+    return sum(data) % 256  # Placeholder CRC calculation
 
 def introduce_error(packet):
-    # Placeholder for the function to introduce error
-    return packet
+    return packet  # Placeholder for error introduction
 
 class UDPClient:
     def __init__(self, server_ip, server_port, file_path):
@@ -53,15 +53,16 @@ class UDPClient:
         while True:
             try:
                 self.sock.sendto(packet, (self.server_ip, self.server_port))
-                log(f"Sent packet {self.sequence_number}")
+                log(f"Sent packet {self.sequence_number}, CWND: {self.congestion_window}")
                 ack = self.sock.recv(4)
                 ack_number = int.from_bytes(ack, 'big')
                 if ack_number == self.sequence_number + 1:
                     self.sequence_number += 1
                     self.adjust_congestion_window()
+                    log(f"Acknowledged packet {self.sequence_number}, CWND: {self.congestion_window}")
                     break
                 else:
-                    log(f"Received out-of-order ACK {ack_number}")
+                    log(f"Received out-of-order ACK {ack_number}, CWND: {self.congestion_window}")
             except socket.timeout:
                 log("Timeout, resending packet")
                 self.reset_congestion_window()
@@ -83,5 +84,6 @@ class UDPClient:
         self.sock.sendto(b'END', (self.server_ip, self.server_port))
 
 # Usage
-client = UDPClient('127.0.0.1', 12345, 'C:/Users/user/Documents/GitHub/TF-Redes/code_0/teste.txt')
-client.send_file()
+if __name__ == '__main__':
+    client = UDPClient(SERVER_IP, SERVER_PORT, FILE_PATH)
+    client.send_file()

@@ -4,7 +4,7 @@ import time
 import zlib
 import os
 import threading
-
+import zlib
 # Constants
 PACKET_SIZE = 10
 TIMEOUT = 1  # Timeout for resending packets
