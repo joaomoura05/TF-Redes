@@ -1,16 +1,18 @@
 import socket
+import sys
 
-UDP_IP = "127.0.0.1" # Replace with the target IP address
-UDP_PORT = 5005	 # Replace with the target port
+def start(UDP_IP, UDP_PORT):
+	# Create a UDP socket
+	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	sock.bind((UDP_IP, UDP_PORT))
 
-message = "Opa" # send the message via socket
+	print(f"Listening for UDP packets on {UDP_IP}:{UDP_PORT}")
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	while True:
+		# Receive data from the socket
+		data, addr = sock.recvfrom(1024)
+		print(f"Received packet from {addr}: {data.decode('utf-8')}")
 
-try:
-	sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
-	print(f"Sent UDP packet to {UDP_IP}:{UDP_PORT}: {message}")
-finally:
-	sock.close()
-
-# python server.py
+if __name__ == "__main__":
+	# Define the UDP IP address and port to listen on
+	start("127.0.0.1", 5005, )
