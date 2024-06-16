@@ -26,10 +26,10 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
     # Simplesmente envia o chunk com o número de sequência (não implementado neste exemplo)
     chunk = chunk.encode('utf-8')
     chunk = chunk.ljust(packet_size, b'\0')  # Padding
-    print(len(chunk.decode('utf-8')))
     crc = calculate_crc(chunk)
 
-    packet = f"PACKET-{sequence_number}: CRC-{crc} : DATA-".encode('utf-8') + chunk
+    #packet = f"PACKET-{sequence_number}: CRC-{crc} : DATA-".encode('utf-8') + chunk
+    packet = sequence_number.to_bytes(4, 'big') + crc.to_bytes(4, 'big') + chunk
 
     # packet = introduce_error(packet)
 

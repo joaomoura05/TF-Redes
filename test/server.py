@@ -11,7 +11,8 @@ def start(IP, PORT):
         # Recebe o dado do socket
         data, addr = server_sock.recvfrom(1024)
         # Aqui caso o dado = END termina a conexão
-        if "END" in data.decode('utf-8'):
+        if data == b'END':
+        # if "END" in data.decode('utf-8'):
             print("Closing connection as requested by the client.")
             break
         else:
@@ -20,13 +21,11 @@ def start(IP, PORT):
 
 def process_packet(server_sock, data, addr):
     global expected_sequence_number
-    # print(f"Received packet from client {addr}: {data.decode('utf-8')}")
-    info = re.match('PACKET-(\d+): CRC-(\d+) : DATA-([\w\s]*)', data.decode('utf-8'))
 
-    sequence_number = int(info.group(1))
-    crc_received = int(info.group(2))
-    data = info.group(3)
-    crc_calculated = calculate_crc(info.group(3).encode('utf-8'))
+    sequence_number = int.from_bytes(data[:4], 'big')
+    crc_received = int.from_bytes(data[4:8], 'big')
+    data = data[8:]
+    crc_calculated = calculate_crc(data)
 
     if crc_received == crc_calculated:
         if sequence_number == expected_sequence_number:
@@ -42,6 +41,7 @@ def process_packet(server_sock, data, addr):
         # print(data)
         # print(crc_received, crc_calculated)
         # print(type(crc_received), type(crc_calculated))
+        # DESCARTA PACOTE
         print(f"Corrupted packet {sequence_number}, expected {expected_sequence_number}")
 
 

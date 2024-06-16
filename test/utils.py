@@ -2,7 +2,6 @@ import sys
 import zlib
 import random
 import socket
-import re
 
 
 packet_size = 10
