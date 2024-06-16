@@ -26,14 +26,33 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
     # Simplesmente envia o chunk com o número de sequência (não implementado neste exemplo)
     chunk = chunk.encode('utf-8')
     chunk = chunk.ljust(packet_size, b'\0')  # Padding
+    print(len(chunk.decode('utf-8')))
     crc = calculate_crc(chunk)
 
-    packet = f"PACKET-{sequence_number}: CRC-{crc} :".encode('utf-8') + chunk
+    packet = f"PACKET-{sequence_number}: CRC-{crc} : DATA-".encode('utf-8') + chunk
 
     # packet = introduce_error(packet)
 
-    client_sock.sendto(packet, (server_ip, server_port))
-    print(f"Sent packet {sequence_number} to {server_ip}:{server_port}")
+    while True:
+        try:
+            # Vai mandar o pacote para o servidor
+            client_sock.sendto(packet, (server_ip, server_port))
+            print(f"Sent packet {sequence_number} to {server_ip}:{server_port}")
+            # Verificar
+            ack = client_sock.recv(1)
+            ack_number = int.from_bytes(ack, 'big')
+            print('ACK', ack_number)
+
+            if ack_number == sequence_number + 1:
+                sequence_number += 1
+                # self.adjust_congestion_window()
+                break
+            else:
+                print(f"Received out-of-order ACK {ack_number}")
+
+        except client_sock.timeout:
+            print("Timeout, resending packet")
+            # reset_congestion_window()
 
 
 if __name__ == "__main__":

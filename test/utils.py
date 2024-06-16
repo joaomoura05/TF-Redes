@@ -1,11 +1,15 @@
 import sys
-import socket
 import zlib
 import random
+import socket
+import re
 
 
 packet_size = 10
-loss_probability = 0.1  # Probability of packet loss
+expected_sequence_number = 0
+received_data = []
+# timeout = 1  # Timeout for resending packets
+# loss_probability = 0.1  # Probability of packet loss
 
 
 def read_file(path):
