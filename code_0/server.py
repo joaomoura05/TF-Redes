@@ -1,11 +1,11 @@
 import socket
+import hashlib
 
 def log(message):
     print(message)
 
 def calculate_crc(data):
-    
-    return sum(data) % 256 
+    return sum(data) % 256
 
 class UDPServer:
     def __init__(self, host, port):
@@ -15,6 +15,7 @@ class UDPServer:
         self.sock.bind((self.host, self.port))
         self.expected_sequence_number = 0
         self.received_data = []
+        self.received_packets = set()
 
     def start(self):
         log("Server started")
@@ -32,14 +33,13 @@ class UDPServer:
         crc_calculated = calculate_crc(data)
 
         if crc_received == crc_calculated:
-            if sequence_number == self.expected_sequence_number:
-                self.received_data.append(data.rstrip(b'\0'))
-                self.expected_sequence_number += 1
-                self.sock.sendto(self.expected_sequence_number.to_bytes(4, 'big'), addr)
+            if sequence_number not in self.received_packets:
+                self.received_packets.add(sequence_number)
+                self.received_data.append(data)
+                self.sock.sendto(sequence_number.to_bytes(4, 'big'), addr)
                 log(f"Received and acknowledged packet {sequence_number}")
             else:
-                log(f"Out-of-order packet {sequence_number}, expected {self.expected_sequence_number}")
-                self.sock.sendto(self.expected_sequence_number.to_bytes(4, 'big'), addr)
+                log(f"Duplicate packet {sequence_number}, ignoring")
         else:
             log(f"Corrupted packet {sequence_number}, expected {self.expected_sequence_number}")
 
@@ -49,5 +49,10 @@ class UDPServer:
             f.write(file_data)
         log("File saved as 'received_file'")
 
-server = UDPServer('0.0.0.0', 12345)
-server.start()
+# Main program
+if __name__ == '__main__':
+    SERVER_HOST = '0.0.0.0'
+    SERVER_PORT = 12345
+
+    server = UDPServer(SERVER_HOST, SERVER_PORT)
+    server.start()
