@@ -1,10 +1,8 @@
-import socket
-import os
 from utils import *
+
 
 def process_packet(server_sock, data, addr):
     global expected_sequence_number
-
     sequence_number = int.from_bytes(data[:4], 'big')
     crc_received = int.from_bytes(data[4:8], 'big')
     data = data[8:]
@@ -21,6 +19,7 @@ def process_packet(server_sock, data, addr):
             server_sock.sendto(bytes([expected_sequence_number]), addr)
     else:
         print(f"Corrupted packet {sequence_number}, expected {expected_sequence_number}")
+
 
 def start(IP, PORT):
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -40,7 +39,6 @@ def start(IP, PORT):
         for chunk in received_data:
             f.write(chunk)
 
+
 if __name__ == "__main__":
-    expected_sequence_number = 0
-    received_data = []
     start("0.0.0.0", 5005)

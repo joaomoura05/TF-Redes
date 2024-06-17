@@ -1,19 +1,15 @@
-import socket
-import sys
 from utils import *
 
-packet_size = 10
-initial_cwnd = 1
-ssthresh = 64
 
 def send_file(IP, PORT, data):
+    global sequence_number
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     client_sock.settimeout(1)
-    sequence_number = 0
     cwnd = initial_cwnd
 
     try:
-        for i in range(0, len(data), packet_size * cwnd):
+        i = 0
+        while i < len(data):
             for j in range(cwnd):
                 chunk_index = i + j * packet_size
                 if chunk_index < len(data):
@@ -22,6 +18,7 @@ def send_file(IP, PORT, data):
                     sequence_number += 1
                 else:
                     break
+            i += cwnd * packet_size
 
             if cwnd < ssthresh:
                 cwnd *= 2
@@ -57,9 +54,6 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
         except socket.timeout:
             print("Timeout, resending packet")
 
-def read_file(path):
-    with open(path, 'rb') as f:
-        return f.read()
 
 if __name__ == "__main__":
     path = sys.argv[1]
