@@ -7,11 +7,19 @@ def send_file(IP, PORT, data):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     client_sock.settimeout(1)
     cwnd = initial_cwnd
+    ssthresh = 6
 
     try:
         i = 0
         while i < len(data):
-            for j in range(cwnd):
+            if cwnd < ssthresh:
+                print("Slow start phase")
+            else:
+                print("Congestion avoidance phase")
+
+            print(f"cwnd: {cwnd}")
+
+            for j in range(int(cwnd)):
                 chunk_index = i + j * packet_size
                 if chunk_index < len(data):
                     chunk = data[chunk_index:chunk_index + packet_size]
@@ -19,18 +27,21 @@ def send_file(IP, PORT, data):
                     sequence_number += 1
                 else:
                     break
-            i += cwnd * packet_size
+            i += int(round(cwnd)) * packet_size
 
             if cwnd < ssthresh:
                 cwnd *= 2
             else:
-                cwnd += 1
+                cwnd += 1 / cwnd
 
         print("File transmission completed")
         client_sock.sendto(b'END', (IP, PORT))
 
     finally:
         client_sock.close()
+
+
+
 
 def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
     chunk = chunk.ljust(packet_size, b'\0')  # Padding
