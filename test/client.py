@@ -1,8 +1,9 @@
 from utils import *
-
+import socket
+import sys
 
 def send_file(IP, PORT, data):
-    global sequence_number
+    sequence_number = 0
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     client_sock.settimeout(1)
     cwnd = initial_cwnd
@@ -40,7 +41,7 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
     while True:
         try:
             client_sock.sendto(packet, (server_ip, server_port))
-            print(f"Sent packet {sequence_number}") # to {server_ip}:{server_port}")
+            print(f"Sent packet {sequence_number}")
 
             ack = client_sock.recv(1)
             ack_number = int.from_bytes(ack, 'big')
@@ -50,17 +51,18 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
                 break
             else:
                 print(f"Received out-of-order ACK {ack_number}")
+                if ack_number < sequence_number + 1:
+                    sequence_number = ack_number
+                    break
 
         except socket.timeout:
-            print("Timeout, resending packet")
+            print(f"Timeout, resending packet {sequence_number}")
 
-
-        time.sleep(0.1)  
+        time.sleep(0.1)
 
 def read_file(path):
     with open(path, 'rb') as f:
         return f.read()
-
 
 if __name__ == "__main__":
     path = sys.argv[1]
