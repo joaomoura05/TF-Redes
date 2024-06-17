@@ -11,7 +11,7 @@ expected_sequence_number = 0
 received_data = []
 initial_cwnd = 1
 ssthresh = 64
-loss_probability = 0.4  # Probability of packet loss
+loss_probability = 0.2  # Probability of loss
 
 
 def read_file(path):
