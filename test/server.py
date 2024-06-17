@@ -1,5 +1,6 @@
 import socket
 import os
+import time
 from utils import *
 
 def process_packet(server_sock, data, addr):
@@ -9,6 +10,8 @@ def process_packet(server_sock, data, addr):
     crc_received = int.from_bytes(data[4:8], 'big')
     data = data[8:]
     crc_calculated = calculate_crc(data)
+
+    print(f"Received packet {sequence_number} from {addr}")
 
     if crc_received == crc_calculated:
         if sequence_number == expected_sequence_number:
@@ -21,6 +24,8 @@ def process_packet(server_sock, data, addr):
             server_sock.sendto(bytes([expected_sequence_number]), addr)
     else:
         print(f"Corrupted packet {sequence_number}, expected {expected_sequence_number}")
+
+    time.sleep(0.1)  # Add sleep to allow user to visualize message exchange
 
 def start(IP, PORT):
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -35,10 +40,12 @@ def start(IP, PORT):
         else:
             process_packet(server_sock, data, addr)
 
-    # Save received data to a file
+     # Save received data to a file
     with open('received_file.txt', 'wb') as f:
         for chunk in received_data:
             f.write(chunk)
+
+    print("Received data:", received_data)
 
 if __name__ == "__main__":
     expected_sequence_number = 0

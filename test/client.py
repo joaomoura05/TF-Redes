@@ -1,5 +1,6 @@
 import socket
 import sys
+import time
 from utils import *
 
 packet_size = 10
@@ -56,6 +57,8 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
 
         except socket.timeout:
             print("Timeout, resending packet")
+
+        time.sleep(0.1)  # Add sleep to allow user to visualize message exchange
 
 def read_file(path):
     with open(path, 'rb') as f:
