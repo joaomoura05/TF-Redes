@@ -1,6 +1,7 @@
 import sys
 import zlib
 import random
+import time
 import socket
 
 
@@ -10,7 +11,6 @@ expected_sequence_number = 0
 received_data = []
 initial_cwnd = 1
 ssthresh = 64
-# timeout = 1  # Timeout for resending packets
 # loss_probability = 0.1  # Probability of packet loss
 
 
