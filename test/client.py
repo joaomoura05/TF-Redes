@@ -34,8 +34,8 @@ def send_file(IP, PORT, data):
 def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
     chunk = chunk.ljust(packet_size, b'\0')  # Padding
     crc = calculate_crc(chunk)
-
     packet = sequence_number.to_bytes(4, 'big') + crc.to_bytes(4, 'big') + chunk
+    packet = introduce_error(packet)
 
     while True:
         try:

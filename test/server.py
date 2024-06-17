@@ -10,6 +10,7 @@ def process_packet(server_sock, data, addr):
 
     print(f"Received packet {sequence_number} from {addr}")
 
+
     if crc_received == crc_calculated:
         if sequence_number == expected_sequence_number:
             received_data.append(data.rstrip(b'\0'))
@@ -38,7 +39,7 @@ def start(IP, PORT):
         else:
             process_packet(server_sock, data, addr)
 
-     # Save received data to a file
+    # Save received data to a file
     with open('received_file.txt', 'wb') as f:
         for chunk in received_data:
             f.write(chunk)
