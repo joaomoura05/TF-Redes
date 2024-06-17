@@ -40,7 +40,7 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
     while True:
         try:
             client_sock.sendto(packet, (server_ip, server_port))
-            print(f"Sent packet {sequence_number} to {server_ip}:{server_port}")
+            print(f"Sent packet {sequence_number}") # to {server_ip}:{server_port}")
 
             ack = client_sock.recv(1)
             ack_number = int.from_bytes(ack, 'big')
@@ -53,6 +53,13 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
 
         except socket.timeout:
             print("Timeout, resending packet")
+
+
+        time.sleep(0.1)  # Add sleep to allow user to visualize message exchange
+
+def read_file(path):
+    with open(path, 'rb') as f:
+        return f.read()
 
 
 if __name__ == "__main__":
