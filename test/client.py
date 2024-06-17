@@ -55,7 +55,7 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
             print("Timeout, resending packet")
 
 
-        time.sleep(0.1)  # Add sleep to allow user to visualize message exchange
+        time.sleep(0.1)  
 
 def read_file(path):
     with open(path, 'rb') as f:
