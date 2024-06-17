@@ -1,24 +1,22 @@
 import sys
 import zlib
 import random
+import time
 import socket
 
 
 packet_size = 10
+sequence_number = 0
 expected_sequence_number = 0
 received_data = []
-# timeout = 1  # Timeout for resending packets
+initial_cwnd = 1
+ssthresh = 64
 # loss_probability = 0.1  # Probability of packet loss
 
 
 def read_file(path):
-    try:
-        with open(path, 'r') as p:
-            data = p.read().rstrip()
-            return data
-    except FileNotFoundError:
-        print(f"Path '{path}' not found.")
-        sys.exit(1)
+    with open(path, 'rb') as f:
+        return f.read().rstrip()
 
 
 def calculate_crc(data):
