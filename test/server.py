@@ -1,23 +1,6 @@
+import socket
+import os
 from utils import *
-
-
-def start(IP, PORT):
-    # Cria um socket UDP
-    server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_sock.bind((IP, PORT))
-    print(f"Listening for UDP packets on {IP}:{PORT}")
-
-    while True:
-        # Recebe o dado do socket
-        data, addr = server_sock.recvfrom(1024)
-        # Aqui caso o dado = END termina a conexão
-        if data == b'END':
-        # if "END" in data.decode('utf-8'):
-            print("Closing connection as requested by the client.")
-            break
-        else:
-            process_packet(server_sock, data, addr)
-
 
 def process_packet(server_sock, data, addr):
     global expected_sequence_number
@@ -32,18 +15,32 @@ def process_packet(server_sock, data, addr):
             received_data.append(data.rstrip(b'\0'))
             expected_sequence_number += 1
             server_sock.sendto(bytes([expected_sequence_number]), addr)
-            # print(data)
             print(f"Received and ACK packet {sequence_number}")
         else:
             print(f"Out-of-order packet {sequence_number}, expected {expected_sequence_number}")
             server_sock.sendto(bytes([expected_sequence_number]), addr)
     else:
-        # print(data)
-        # print(crc_received, crc_calculated)
-        # print(type(crc_received), type(crc_calculated))
-        # DESCARTA PACOTE
         print(f"Corrupted packet {sequence_number}, expected {expected_sequence_number}")
 
+def start(IP, PORT):
+    server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_sock.bind((IP, PORT))
+    print(f"Listening for UDP packets on {IP}:{PORT}")
+
+    while True:
+        data, addr = server_sock.recvfrom(1024)
+        if data == b'END':
+            print("Closing connection as requested by the client.")
+            break
+        else:
+            process_packet(server_sock, data, addr)
+
+    # Save received data to a file
+    with open('received_file.txt', 'wb') as f:
+        for chunk in received_data:
+            f.write(chunk)
 
 if __name__ == "__main__":
+    expected_sequence_number = 0
+    received_data = []
     start("0.0.0.0", 5005)
