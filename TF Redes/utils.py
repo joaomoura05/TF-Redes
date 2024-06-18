@@ -1,5 +1,4 @@
-# Importa módulos necessários
-import sys  
+import sys
 import zlib  
 import random  
 import time  
@@ -12,7 +11,7 @@ expected_sequence_number = 0
 received_data = []  
 initial_cwnd = 1  
 ssthresh = 64  
-loss_probability = 0.0  
+loss_probability = 0.1
 
 # Função para ler um arquivo e retornar seu conteúdo em bytes (removendo espaços em branco no final)
 def read_file(path):
@@ -30,13 +29,3 @@ def introduce_error(data):
         corrupted_data[random.randint(0, len(data)-1)] ^= 0xFF
         return bytes(corrupted_data)
     return data
-
-# Função para ajustar a janela de congestionamento (não implementada)
-def adjust_congestion_window():
-    # Implemente a lógica para ajustar a janela de congestionamento
-    pass
-
-# Função para resetar a janela de congestionamento (não implementada)
-def reset_congestion_window():
-    # Implemente a lógica para resetar a janela de congestionamento
-    pass

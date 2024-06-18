@@ -1,5 +1,5 @@
-from utils import *  
-import sys
+from utils import *
+
 
 def send_file(IP, PORT, data):
     sequence_number = 0
@@ -73,12 +73,11 @@ def send_chunk(client_sock, server_ip, server_port, chunk, sequence_number):
 
         time.sleep(0.1)  
 
-# Lê o arquivo
-def read_file(path):
-    with open(path, 'rb') as f:
-        return f.read()  
 
 if __name__ == "__main__":
-    path = sys.argv[1]  
-    data = read_file(path) 
-    send_file("127.0.0.1", 5005, data)  
+    path = sys.argv[1]
+    if path == 'END':
+        send_file("127.0.0.1", 5005, b'END')
+    else:
+        data = read_file(path)
+        send_file("127.0.0.1", 5005, data)

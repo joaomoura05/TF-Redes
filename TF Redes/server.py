@@ -1,6 +1,5 @@
-from utils import * 
-import socket
-import time
+from utils import *
+
 
 def process_packet(server_sock, data, addr, expected_sequence_number, received_data):
     # Extrai o número de sequência do pacote, CRC e data
@@ -30,6 +29,7 @@ def process_packet(server_sock, data, addr, expected_sequence_number, received_d
     time.sleep(0.5)  
     return expected_sequence_number, received_data
 
+
 def start(IP, PORT):
     # Configura o socket UDP e faz o bind para o IP e porta especificados
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -55,7 +55,8 @@ def start(IP, PORT):
     with open('received_file.txt', 'wb') as f:
         for chunk in received_data:
             f.write(chunk)
-    print("File received and saved as 'received_file.txt'.")
+    print("File received")
+
 
 if __name__ == "__main__":
     start("0.0.0.0", 5005)  # Inicia o servidor na interface 0.0.0.0 e porta 5005
